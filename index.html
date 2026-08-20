@@ -351,9 +351,9 @@
   </div>
 
   <script>
-    const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxsIpzGsDckRbFxqz79ee7M0JGRaK0-fGLGhMqW8I7sPzPwEOgRBH_VtRZ_4l8PoaaVKg/exec";
+    // Enlace actualizado del Apps Script
+    const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpN85AfvNPZhgyLHnG_mcIZS9CgWngKHDdIhGKqvbZz4n9F-x85AuXW3wpZMoa5LfrgA/exec";
 
-    // Productos enumerados del 1.jpeg al 21.jpeg
     const productos = [
       { id: 1, nombre: "TORTRIX LIMON", precio: 1.00, imagen: "1.jpeg", cantidad: 0 },
       { id: 2, nombre: "TORTRIX BARBACOA", precio: 1.00, imagen: "2.jpeg", cantidad: 0 },
@@ -468,6 +468,17 @@
       const tipoPago = document.getElementById("tipoPago").value;
       const denominacion = document.getElementById("denominacion").value;
 
+      let cambioVal = "N/A";
+      let detallePagoStr = "";
+
+      if (tipoPago === "ahora") {
+        const cambioNum = denominacion ? (parseFloat(denominacion) - total) : 0;
+        cambioVal = cambioNum > 0 ? `Q${cambioNum.toFixed(2)}` : "Q0.00";
+        detallePagoStr = `💳 *Pago:* Contado (Ahorita)\n💵 *Paga con:* Q${denominacion || total.toFixed(2)}\n🪙 *Cambio:* ${cambioVal}`;
+      } else {
+        detallePagoStr = `🗓️ *Pago:* A crédito (Cobrar en 15 días / Quincena)`;
+      }
+
       let listaProductosStr = "";
       productos.forEach(p => {
         if (p.cantidad > 0) {
@@ -475,15 +486,7 @@
         }
       });
 
-      let detallePagoStr = "";
-      if (tipoPago === "ahora") {
-        const cambio = denominacion ? (parseFloat(denominacion) - total) : 0;
-        detallePagoStr = `💳 *Pago:* Contado (Ahorita)\n💵 *Paga con:* Q${denominacion || total.toFixed(2)}\n🪙 *Cambio:* Q${cambio > 0 ? cambio.toFixed(2) : '0.00'}`;
-      } else {
-        detallePagoStr = `🗓️ *Pago:* A crédito (Cobrar en 15 días / Quincena)`;
-      }
-
-      // Enviar registro a Google Sheets / Drive
+      // Enviar datos al script de Google Drive
       fetch(GOOGLE_APPS_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
@@ -493,7 +496,8 @@
           productos: listaProductosStr,
           total: total.toFixed(2),
           tipoPago: tipoPago === 'ahora' ? 'Contado' : 'Crédito (15 días)',
-          denominacion: denominacion ? `Q${denominacion}` : 'N/A'
+          denominacion: denominacion ? `Q${denominacion}` : 'N/A',
+          cambio: cambioVal
         })
       });
 
