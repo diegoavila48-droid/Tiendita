@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Punto de Venta - Mi Tiendita</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f3f4f6;
+      margin: 0;
+      padding: 15px;
+      color: #1f2937;
+    }
+
+    .app-header {
+      text-align: center;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #059669, #047857);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .app-header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .app-header p {
+      margin: 5px 0 0 0;
+      opacity: 0.9;
+      font-size: 0.95rem;
+    }
+
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 768px) {
+      .main-layout {
+        grid-template-columns: 1.8fr 1fr;
+      }
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .product-img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      background-color: #f3f4f6;
+    }
+
+    .product-info {
+      padding: 10px;
+      text-align: center;
+    }
+
+    .product-title {
+      font-weight: 600;
+      font-size: 0.88rem;
+      margin-bottom: 4px;
+      color: #111827;
+      min-height: 2.6em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.2;
+    }
+
+    .product-price {
+      color: #059669;
+      font-weight: bold;
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    .counter-control {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-counter {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: none;
+      background-color: #e5e7eb;
+      color: #374151;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s;
+    }
+
+    .btn-counter:hover {
+      background-color: #d1d5db;
+    }
+
+    .btn-counter.add {
+      background-color: #059669;
+      color: white;
+    }
+
+    .btn-counter.add:hover {
+      background-color: #047857;
+    }
+
+    .qty-display {
+      font-weight: bold;
+      font-size: 0.95rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    .order-summary {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      height: fit-content;
+      position: sticky;
+      top: 15px;
+    }
+
+    .summary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #f3f4f6;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+
+    .summary-header h2 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .btn-clear {
+      background-color: #fee2e2;
+      color: #dc2626;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-clear:hover {
+      background-color: #fca5a5;
+    }
+
+    .cart-items-list {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      padding: 6px 0;
+      border-bottom: 1px dashed #e5e7eb;
+    }
+
+    .total-box {
+      background-color: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      padding: 12px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .total-amount {
+      font-size: 1.4rem;
+      color: #047857;
+      font-weight: bold;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+    }
+
+    .change-info {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #2563eb;
+      margin-top: 5px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background-color: #25d366;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-submit:hover {
+      background-color: #1ebc57;
+    }
+
+    .badge-credit {
+      background-color: #fef3c7;
+      color: #92400e;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-top: 5px;
+    }
+
+    .confirm-box {
+      background-color: #e0f2fe;
+      border: 1px solid #bae6fd;
+      color: #0369a1;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-header">
+    <h1><i class="fa-solid fa-store"></i> Control de Ventas - Mi Tiendita</h1>
+    <p>Catálogo de Productos y Registro Directo a Drive & WhatsApp</p>
+  </div>
+
+  <div class="main-layout">
+    <div class="products-grid" id="productsGrid"></div>
+
+    <div class="order-summary">
+      <div class="summary-header">
+        <h2><i class="fa-solid fa-receipt"></i> Resumen</h2>
+        <button class="btn-clear" onclick="limpiarResumen()">
+          <i class="fa-solid fa-trash-can"></i> Limpiar
+        </button>
+      </div>
+
+      <div class="cart-items-list" id="cartList">
+        <div style="text-align:center; color:#9ca3af;">Selecciona productos del catálogo</div>
+      </div>
+
+      <div class="total-box">
+        <span>TOTAL:</span>
+        <span class="total-amount" id="totalDisplay">Q0.00</span>
+      </div>
+
+      <div class="form-group">
+        <label>Forma de Pago</label>
+        <select id="tipoPago" class="form-control" onchange="toggleFormaPago()">
+          <option value="ahora">Pagar Ahorita (Contado)</option>
+          <option value="quincena">Pagar en 15 días (Quincena)</option>
+        </select>
+      </div>
+
+      <div id="boxPagarAhora" class="form-group">
+        <label>¿Con cuánto paga el cliente?</label>
+        <input type="number" id="denominacion" class="form-control" placeholder="Ej. 10, 20, 50, 100" oninput="calcularCambio()">
+        <div id="cambioDisplay" class="change-info"></div>
+      </div>
+
+      <div id="boxPagarQuincena" class="badge-credit" style="display: none;">
+        🗓️ Se registrará a crédito para cobrar en la próxima quincena.
+      </div>
+
+      <div class="form-group" style="margin-top: 10px;">
+        <label>Nombre del Cliente</label>
+        <input type="text" id="cliente" class="form-control" placeholder="Nombre completo">
+      </div>
+
+      <div class="confirm-box">
+        <i class="fa-solid fa-circle-check"></i> Revisa el pedido. Al confirmar se registrará el pedido y se abrirá WhatsApp automáticamente.
+      </div>
+
+      <button class="btn-submit" onclick="finalizarCompra()">
+        <i class="fa-brands fa-whatsapp"></i> Confirmar y Enviar a WhatsApp
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxsIpzGsDckRbFxqz79ee7M0JGRaK0-fGLGhMqW8I7sPzPwEOgRBH_VtRZ_4l8PoaaVKg/exec";
+
+    // Productos enumerados del 1.jpeg al 21.jpeg
+    const productos = [
+      { id: 1, nombre: "TORTRIX LIMON", precio: 1.00, imagen: "1.jpeg", cantidad: 0 },
+      { id: 2, nombre: "TORTRIX BARBACOA", precio: 1.00, imagen: "2.jpeg", cantidad: 0 },
+      { id: 3, nombre: "TORTRIX PICANTE", precio: 1.00, imagen: "3.jpeg", cantidad: 0 },
+      { id: 4, nombre: "TORTRIX DETODITOS", precio: 2.50, imagen: "4.jpeg", cantidad: 0 },
+      { id: 5, nombre: "QUESIFRITOS", precio: 1.00, imagen: "5.jpeg", cantidad: 0 },
+      { id: 6, nombre: "MANIAS NAU", precio: 1.00, imagen: "6.jpeg", cantidad: 0 },
+      { id: 7, nombre: "MANIAS JAPONESAS DIANA", precio: 1.00, imagen: "7.jpeg", cantidad: 0 },
+      { id: 8, nombre: "JALAPEÑOS", precio: 1.00, imagen: "8.jpeg", cantidad: 0 },
+      { id: 9, nombre: "MANIAS CON SAL", precio: 1.00, imagen: "9.jpeg", cantidad: 0 },
+      { id: 10, nombre: "ZAMBOS TAJIN", precio: 2.00, imagen: "10.jpeg", cantidad: 0 },
+      { id: 11, nombre: "CHETOS NARANJA", precio: 1.50, imagen: "11.jpeg", cantidad: 0 },
+      { id: 12, nombre: "SEÑORIAL", precio: 1.00, imagen: "12.jpeg", cantidad: 0 },
+      { id: 13, nombre: "DORITOS", precio: 2.00, imagen: "13.jpeg", cantidad: 0 },
+      { id: 14, nombre: "RANCHERITOS", precio: 1.00, imagen: "14.jpeg", cantidad: 0 },
+      { id: 15, nombre: "GALLETAS CHIKY", precio: 2.50, imagen: "15.jpeg", cantidad: 0 },
+      { id: 16, nombre: "CAMPECHANAS", precio: 2.50, imagen: "16.jpeg", cantidad: 0 },
+      { id: 17, nombre: "COCAS", precio: 6.00, imagen: "17.jpeg", cantidad: 0 },
+      { id: 18, nombre: "PEPSI", precio: 3.00, imagen: "18.jpeg", cantidad: 0 },
+      { id: 19, nombre: "REDBULL CLASICO", precio: 10.00, imagen: "19.jpeg", cantidad: 0 },
+      { id: 20, nombre: "CHICLES", precio: 0.50, imagen: "20.jpeg", cantidad: 0 },
+      { id: 21, nombre: "GOMITAS 3X1", precio: 1.00, imagen: "21.jpeg", cantidad: 0 }
+    ];
+
+    function cargarProductos() {
+      const container = document.getElementById("productsGrid");
+      container.innerHTML = "";
+      productos.forEach((prod, index) => {
+        container.innerHTML += `
+          <div class="product-card">
+            <img src="${prod.imagen}" alt="${prod.nombre}" class="product-img" onerror="this.src='https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=400&q=80'">
+            <div class="product-info">
+              <div class="product-title">${prod.nombre}</div>
+              <div class="product-price">Q${prod.precio.toFixed(2)}</div>
+              <div class="counter-control">
+                <button class="btn-counter" onclick="cambiarCantidad(${index}, -1)">-</button>
+                <span class="qty-display" id="qty-${index}">${prod.cantidad}</span>
+                <button class="btn-counter add" onclick="cambiarCantidad(${index}, 1)">+</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function cambiarCantidad(index, cambio) {
+      if (productos[index].cantidad + cambio >= 0) {
+        productos[index].cantidad += cambio;
+        document.getElementById(`qty-${index}`).innerText = productos[index].cantidad;
+        actualizarResumen();
+      }
+    }
+
+    function actualizarResumen() {
+      const cartList = document.getElementById("cartList");
+      let total = 0;
+      let itemsHtml = "";
+      productos.forEach(prod => {
+        if (prod.cantidad > 0) {
+          const subtotal = prod.cantidad * prod.precio;
+          total += subtotal;
+          itemsHtml += `<div class="cart-item"><span>${prod.cantidad}x ${prod.nombre}</span><strong>Q${subtotal.toFixed(2)}</strong></div>`;
+        }
+      });
+      cartList.innerHTML = itemsHtml || `<div style="text-align:center; color:#9ca3af;">Selecciona productos del catálogo</div>`;
+      document.getElementById("totalDisplay").innerText = `Q${total.toFixed(2)}`;
+      calcularCambio();
+    }
+
+    function limpiarResumen() {
+      productos.forEach((p, index) => {
+        p.cantidad = 0;
+        const elem = document.getElementById(`qty-${index}`);
+        if (elem) elem.innerText = 0;
+      });
+      document.getElementById("cliente").value = "";
+      document.getElementById("denominacion").value = "";
+      document.getElementById("cambioDisplay").innerText = "";
+      document.getElementById("tipoPago").value = "ahora";
+      toggleFormaPago();
+      actualizarResumen();
+    }
+
+    function toggleFormaPago() {
+      const tipo = document.getElementById("tipoPago").value;
+      document.getElementById("boxPagarAhora").style.display = tipo === "ahora" ? "block" : "none";
+      document.getElementById("boxPagarQuincena").style.display = tipo === "quincena" ? "block" : "none";
+    }
+
+    function calcularCambio() {
+      const total = productos.reduce((sum, p) => sum + (p.cantidad * p.precio), 0);
+      const denominacion = parseFloat(document.getElementById("denominacion").value) || 0;
+      const cambioDisplay = document.getElementById("cambioDisplay");
+      if (denominacion > 0 && total > 0) {
+        const cambio = denominacion - total;
+        cambioDisplay.innerText = cambio >= 0 ? `Cambio a entregar: Q${cambio.toFixed(2)}` : `Faltan: Q${Math.abs(cambio).toFixed(2)}`;
+        cambioDisplay.style.color = cambio >= 0 ? "#2563eb" : "#dc2626";
+      } else {
+        cambioDisplay.innerText = "";
+      }
+    }
+
+    function finalizarCompra() {
+      const total = productos.reduce((sum, p) => sum + (p.cantidad * p.precio), 0);
+      if (total === 0) {
+        alert("Por favor selecciona al menos un producto.");
+        return;
+      }
+
+      const cliente = document.getElementById("cliente").value.trim() || "Cliente General";
+      const telefonoDestino = "50238076714";
+      const tipoPago = document.getElementById("tipoPago").value;
+      const denominacion = document.getElementById("denominacion").value;
+
+      let listaProductosStr = "";
+      productos.forEach(p => {
+        if (p.cantidad > 0) {
+          listaProductosStr += `• ${p.cantidad}x ${p.nombre} - Q${(p.cantidad * p.precio).toFixed(2)}\n`;
+        }
+      });
+
+      let detallePagoStr = "";
+      if (tipoPago === "ahora") {
+        const cambio = denominacion ? (parseFloat(denominacion) - total) : 0;
+        detallePagoStr = `💳 *Pago:* Contado (Ahorita)\n💵 *Paga con:* Q${denominacion || total.toFixed(2)}\n🪙 *Cambio:* Q${cambio > 0 ? cambio.toFixed(2) : '0.00'}`;
+      } else {
+        detallePagoStr = `🗓️ *Pago:* A crédito (Cobrar en 15 días / Quincena)`;
+      }
+
+      // Enviar registro a Google Sheets / Drive
+      fetch(GOOGLE_APPS_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cliente: cliente,
+          productos: listaProductosStr,
+          total: total.toFixed(2),
+          tipoPago: tipoPago === 'ahora' ? 'Contado' : 'Crédito (15 días)',
+          denominacion: denominacion ? `Q${denominacion}` : 'N/A'
+        })
+      });
+
+      // Redirección directa a WhatsApp
+      const mensajeWA = `🏪 *NUEVO PEDIDO - MI TIENDITA*\n----------------------------------\n👤 *Cliente:* ${cliente}\n\n🛒 *Productos:*\n${listaProductosStr}\n💰 *TOTAL:* Q${total.toFixed(2)}\n${detallePagoStr}\n----------------------------------\nRegistrado automáticamente.`;
+
+      const whatsappUrl = `https://wa.me/${telefonoDestino}?text=${encodeURIComponent(mensajeWA)}`;
+      window.open(whatsappUrl, '_blank');
+    }
+
+    cargarProductos();
+  </script>
+</body>
+</html>
